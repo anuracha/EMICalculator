@@ -1,5 +1,5 @@
 # Use an OpenJDK image for Java 8 (as per your pom.xml)
-FROM openjdk:8-jdk-alpine
+FROM eclipse-temurin:8-jdk
 VOLUME /tmp
 # Copy the built jar into the container
 ARG JAR_FILE=target/smartemicalculator-1.0-SNAPSHOT.jar
