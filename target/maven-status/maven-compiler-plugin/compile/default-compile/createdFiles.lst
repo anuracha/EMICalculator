@@ -2,8 +2,6 @@ com\project\emi\AppConfig.class
 com\project\emi\model\EmiRequest.class
 com\project\emi\model\Prepayment.class
 com\project\emi\model\EmiResponse.class
-com\project\emi\HelloController.class
-com\project\emi\HelloController$Result.class
 com\project\emi\App.class
 com\project\emi\service\EmiCalculatorService.class
 com\project\emi\controller\EmiController.class
