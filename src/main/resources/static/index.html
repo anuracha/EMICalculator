@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Flatpickr (Modern Date Picker) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 
 <body>
@@ -72,7 +76,8 @@
 
                 <div class="form-group">
                     <label for="start-date">Loan Start Date</label>
-                    <input type="date" id="start-date" class="form-control" required>
+                    <input type="text" id="start-date" class="form-control" placeholder="Select Date" required
+                        autocomplete="off">
                 </div>
 
                 <div class="layout"

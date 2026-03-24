@@ -19,8 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Default start date to today
-    document.getElementById('start-date').valueAsDate = new Date();
+    // Modern Date Picker Initialization
+    flatpickr("#start-date", {
+        defaultDate: "today",
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "F j, Y",
+        theme: "dark"
+    });
 
     // Add Event Listeners for Dynamic Lists
     document.getElementById('add-prepayment-btn').addEventListener('click', addPrepaymentField);
@@ -136,14 +142,28 @@ function createFormGroup(labelText, inputType, inputId, placeholder, required, f
     label.innerText = labelText;
 
     const input = document.createElement('input');
-    input.type = inputType;
+    // If it's a date field, we use type="text" and initialize flatpickr
+    input.type = inputType === 'date' ? 'text' : inputType;
     input.className = 'form-control';
     input.id = inputId;
     if (placeholder) input.placeholder = placeholder;
     if (required) input.required = true;
+    input.autocomplete = "off";
 
     group.appendChild(label);
     group.appendChild(input);
+
+    if (inputType === 'date') {
+        setTimeout(() => {
+            flatpickr(input, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "M j, Y",
+                theme: "dark"
+            });
+        }, 0);
+    }
+
     return group;
 }
 
