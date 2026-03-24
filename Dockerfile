@@ -1,14 +1,8 @@
-FROM maven:3.9.6-eclipse-temurin-17 AS build
-
-WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
-
-FROM eclipse-temurin:8-jdk
-
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
-
-EXPOSE 8080
-
-CMD ["java", "-jar", "app.jar"]
+# Use an OpenJDK image for Java 8 (as per your pom.xml)
+FROM openjdk:8-jdk-alpine
+VOLUME /tmp
+# Copy the built jar into the container
+ARG JAR_FILE=target/smartemicalculator-1.0-SNAPSHOT.jar
+COPY ${JAR_FILE} app.jar
+# Run the application
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
