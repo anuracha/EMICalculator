@@ -23,133 +23,177 @@
             <p>Interactive amortization with mid-term prepayments & rate changes</p>
         </header>
 
-        <div class="layout">
-            <!-- LEFT PANEL: RESULTS -->
-            <div class="glass-panel" id="results-panel">
+        <div class="layout" style="align-items: stretch; gap: 1.5rem;">
+            <!-- LEFT COLUMN: CONTROLS & TABLE -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem; flex: 1.2; min-width: 0;">
+
+                <!-- BASIC DETAILS -->
+                <div class="glass-panel" id="controls-panel" style="padding: 1.5rem;">
+                    <div class="section-title">
+                        <i class="fas fa-money-check-alt"></i> Basic Details
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="principal">Loan Principal</label>
+                            <input type="text" id="principal" class="form-control" placeholder="e.g. 5,00,000"
+                                value="5,00,000">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="start-date">Start Date</label>
+                            <input type="text" id="start-date" class="form-control" placeholder="Select Date" required
+                                autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="interest-rate">Rate (0-30%): <span id="rate-display"
+                                    class="slider-value">8.5%</span></label>
+                            <input type="range" min="1" max="30" step="0.1" value="8.5" id="interest-rate-slider"
+                                class="slider">
+                            <input type="number" step="0.1" id="interest-rate" class="form-control" value="8.5">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="tenure">Tenure (Months): <span id="tenure-display"
+                                    class="slider-value">60</span></label>
+                            <input type="range" min="1" max="360" step="1" value="60" id="tenure-slider" class="slider">
+                            <input type="number" id="tenure" class="form-control" value="60">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="dynamic-section">
+                            <div class="section-title"
+                                style="font-size: 0.95rem; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">
+                                <i class="fas fa-hand-holding-usd"></i> Prepayments
+                            </div>
+
+                            <!-- Monthly Prepayment Window -->
+                            <div
+                                style="background: rgba(45, 212, 191, 0.03); border: 1px solid rgba(45, 212, 191, 0.1); border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem;">
+                                <div
+                                    style="font-size: 0.8rem; font-weight: 600; color: #2dd4bf; margin-bottom: 0.5rem;">
+                                    Recurring Monthly
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0.75rem;">
+                                    <label for="monthly-prepayment" style="font-size: 0.7rem;">Amount</label>
+                                    <input type="text" id="monthly-prepayment" class="form-control"
+                                        placeholder="e.g. 5,000" value="0">
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label for="monthly-prepay-start" style="font-size: 0.7rem;">From</label>
+                                        <input type="text" id="monthly-prepay-start" class="form-control"
+                                            placeholder="Select" autocomplete="off" style="font-size: 0.8rem;">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label for="monthly-prepay-end" style="font-size: 0.7rem;">To</label>
+                                        <input type="text" id="monthly-prepay-end" class="form-control"
+                                            placeholder="Optional" autocomplete="off" style="font-size: 0.8rem;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="font-size: 0.8rem; font-weight: 600; opacity: 0.7; margin: 1rem 0 0.5rem 0;">
+                                Lumpsum Payments
+                            </div>
+                            <div id="prepayments-list" class="dynamic-list"
+                                style="max-height: 120px; overflow-y: auto; margin-bottom: 0.5rem;"></div>
+                            <button class="btn btn-secondary btn-small" id="add-prepayment-btn">
+                                <i class="fas fa-plus"></i> Add Lumpsum
+                            </button>
+                        </div>
+                        <div class="dynamic-section">
+                            <div class="section-title"
+                                style="font-size: 0.95rem; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">
+                                <i class="fas fa-chart-line"></i> Rate Changes
+                            </div>
+                            <div id="rate-changes-list" class="dynamic-list"
+                                style="max-height: 150px; overflow-y: auto; margin-bottom: 0.5rem;"></div>
+                            <button class="btn btn-secondary btn-small" id="add-rate-btn">
+                                <i class="fas fa-plus"></i> Add Rate Change
+                            </button>
+                        </div>
+                    </div>
+
+                    <button class="btn" id="calculate-btn" style="width: 100%;">
+                        <i class="fas fa-calculator"></i> Calculate Amortization
+                    </button>
+                </div>
+
+                <!-- AMORTIZATION TABLE (Self-contained panel) -->
+                <div class="glass-panel" id="table-panel"
+                    style="flex: 1; min-height: 400px; display: flex; flex-direction: column; padding: 1.5rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div class="section-title" style="margin: 0; font-size: 1.1rem;">
+                            <i class="fas fa-table"></i> Payment Schedule
+                        </div>
+                        <button id="export-excel-btn" class="btn btn-secondary btn-small"
+                            style="width: auto; background: var(--green); color: white;">
+                            <i class="fas fa-file-excel"></i> Export
+                        </button>
+                    </div>
+
+                    <div class="table-container"
+                        style="flex: 1; overflow: auto; border: 1px solid var(--border); border-radius: 8px;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead style="position: sticky; top: 0; background: var(--bg-card); z-index: 2;">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>EMI</th>
+                                    <th>Principal</th>
+                                    <th>Interest</th>
+                                    <th>Prepay</th>
+                                    <th>Rate</th>
+                                    <th>Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="schedule-body">
+                                <!-- Data rows go here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: SUMMARY -->
+            <div class="glass-panel" id="results-panel" style="flex: 0.8; padding: 1.5rem;">
                 <div class="section-title">
                     <i class="fas fa-chart-pie"></i> Schedule Summary
                 </div>
-
-                <div class="results-summary">
+                <div class="results-summary" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div class="summary-card highlight" style="grid-column: span 2;">
-                        <h3>Initial EMI</h3>
-                        <div class="value" id="summary-emi">₹0</div>
+                        <h3>Initial Monthly EMI</h3>
+                        <div class="value" id="summary-emi">0</div>
                     </div>
                     <div class="summary-card">
-                        <h3>Principal Amount</h3>
-                        <div class="value" id="summary-principal">₹0</div>
+                        <h3>Principal</h3>
+                        <div class="value" id="summary-principal">0</div>
                     </div>
                     <div class="summary-card">
-                        <h3>Effective Tenure</h3>
-                        <div class="value" style="color: var(--green)" id="summary-months">0 Months</div>
+                        <h3>Effective Months</h3>
+                        <div class="value" style="color: var(--green)" id="summary-months">0</div>
                     </div>
                     <div class="summary-card">
-                        <h3>Loan Start Date</h3>
-                        <div class="value" id="summary-start-date" style="color: var(--primary); font-size: 1.25rem;">-
+                        <h3>Start Date</h3>
+                        <div class="value" id="summary-start-date" style="color: var(--primary); font-size: 1.1rem;">-
                         </div>
                     </div>
                     <div class="summary-card">
-                        <h3>Loan End Date</h3>
-                        <div class="value" id="summary-end-date" style="color: var(--green); font-size: 1.25rem;">-
+                        <h3>Estimated End Date</h3>
+                        <div class="value" id="summary-end-date" style="color: var(--green); font-size: 1.1rem;">-
                         </div>
                     </div>
                     <div class="summary-card"
-                        style="grid-column: span 2; display: flex; flex-direction: column; align-items: center;">
-                        <h3 style="margin-bottom: 1rem;">Payment Breakdown</h3>
-                        <div style="width: 250px; height: 250px;">
+                        style="grid-column: span 2; display: flex; flex-direction: column; align-items: center; padding: 1rem;">
+                        <h3 style="margin-bottom: 1rem;">Principal vs Interest Breakdown</h3>
+                        <div style="width: 220px; height: 220px;">
                             <canvas id="emiPieChart"></canvas>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- RIGHT PANEL: CONTROLS -->
-            <div class="glass-panel" id="controls-panel">
-                <div class="section-title">
-                    <i class="fas fa-money-check-alt"></i> Basic Details
-                </div>
-
-                <div class="form-group">
-                    <label for="principal">Loan Principal Amount (₹)</label>
-                    <input type="text" id="principal" class="form-control" placeholder="e.g. 5,00,000" value="5,00,000">
-                </div>
-
-                <div class="form-group">
-                    <label for="start-date">Loan Start Date</label>
-                    <input type="text" id="start-date" class="form-control" placeholder="Select Date" required
-                        autocomplete="off">
-                </div>
-
-                <div class="layout"
-                    style="gap: 1rem; margin-bottom: 2rem; grid-template-columns: 1fr 1fr; max-width: 100%;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="interest-rate">Annual Interest Rate: <span id="rate-display"
-                                class="slider-value">8.5%</span></label>
-                        <input type="range" min="1" max="30" step="0.1" value="8.5" id="interest-rate-slider"
-                            class="slider">
-                        <input type="number" step="0.1" id="interest-rate" class="form-control" placeholder="e.g. 8.5"
-                            value="8.5">
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="tenure">Tenure: <span id="tenure-display" class="slider-value">60
-                                Months</span></label>
-                        <input type="range" min="1" max="360" step="1" value="60" id="tenure-slider" class="slider">
-                        <input type="number" id="tenure" class="form-control" placeholder="e.g. 60" value="60">
-                    </div>
-                </div>
-
-                <div class="section-title">
-                    <i class="fas fa-hand-holding-usd"></i> Prepayments (Optional)
-                </div>
-                <div id="prepayments-list" class="dynamic-list"></div>
-                <button class="btn btn-secondary" id="add-prepayment-btn" style="margin-bottom: 2rem;">
-                    <i class="fas fa-plus"></i> Add Prepayment
-                </button>
-
-                <div class="section-title">
-                    <i class="fas fa-chart-line"></i> Rate Changes (Optional)
-                </div>
-                <div id="rate-changes-list" class="dynamic-list"></div>
-                <button class="btn btn-secondary" id="add-rate-btn" style="margin-bottom: 2rem;">
-                    <i class="fas fa-plus"></i> Add Rate Change
-                </button>
-
-                <button class="btn" id="calculate-btn">
-                    <i class="fas fa-calculator"></i> Calculate Schedule
-                </button>
-            </div>
-        </div>
-
-        <!-- FULL-WIDTH: AMORTIZATION SCHEDULE -->
-        <div class="glass-panel" style="margin-top: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-                <div class="section-title" style="margin-bottom: 0; flex: 1;">
-                    <i class="fas fa-table"></i> Amortization Schedule
-                </div>
-                <button id="export-excel-btn"
-                    style="display: inline-flex; align-items: center; gap: 0.5rem; background: #059669; color: #fff; border: none; padding: 0.6rem 1.25rem; font-size: 0.9rem; font-weight: 600; border-radius: 8px; cursor: pointer; font-family: inherit; box-shadow: 0 0 12px rgba(5, 150, 105, 0.3);">
-                    <i class="fas fa-file-excel"></i> Export to Excel
-                </button>
-            </div>
-
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>EMI</th>
-                            <th>Principal</th>
-                            <th>Interest</th>
-                            <th>Prepay</th>
-                            <th>Rate</th>
-                            <th>Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody id="schedule-body">
-                        <!-- Populated via JS -->
-                    </tbody>
-                </table>
             </div>
         </div>
 

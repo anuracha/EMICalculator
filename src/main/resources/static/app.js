@@ -7,17 +7,21 @@ let emiChart = null;
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Format principal field with Indian commas automatically
+    // Format input fields with Indian commas automatically
     const principalInput = document.getElementById('principal');
-    principalInput.addEventListener('input', function (e) {
-        // Remove all non-digit characters
-        let value = this.value.replace(/[^0-9]/g, '');
+    const monthlyPrepayInput = document.getElementById('monthly-prepayment');
+
+    const formatInput = (input) => {
+        let value = input.value.replace(/[^0-9]/g, '');
         if (value) {
-            this.value = parseInt(value, 10).toLocaleString('en-IN');
+            input.value = parseInt(value, 10).toLocaleString('en-IN');
         } else {
-            this.value = '';
+            input.value = input.id === 'principal' ? '' : '0';
         }
-    });
+    };
+
+    principalInput.addEventListener('input', () => formatInput(principalInput));
+    monthlyPrepayInput.addEventListener('input', () => formatInput(monthlyPrepayInput));
 
     // Modern Date Picker Initialization
     flatpickr("#start-date", {
@@ -25,6 +29,20 @@ document.addEventListener('DOMContentLoaded', () => {
         dateFormat: "Y-m-d",
         altInput: true,
         altFormat: "F j, Y",
+        theme: "dark"
+    });
+
+    flatpickr("#monthly-prepay-start", {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "M j, Y",
+        theme: "dark"
+    });
+
+    flatpickr("#monthly-prepay-end", {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "M j, Y",
         theme: "dark"
     });
 
@@ -127,8 +145,6 @@ function exportToExcel() {
 
 function formatCurrency(amount) {
     return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
         maximumFractionDigits: 0
     }).format(amount);
 }
@@ -203,22 +219,62 @@ function addRateField() {
 
     const item = document.createElement('div');
     item.className = 'dynamic-item';
+    item.style.flexDirection = 'column';
+    item.style.alignItems = 'stretch';
+    item.style.gap = '0.5rem';
 
-    // Use Date picker for Rate Change
-    const dateGroup = createFormGroup('Date', 'date', `rate-date-${index}`, '', true, "1");
-    const newRateGroup = createFormGroup('New Rate (%)', 'number', `rate-value-${index}`, 'e.g. 9.0', true, "2");
+    const row1 = document.createElement('div');
+    row1.style.display = 'flex';
+    row1.style.gap = '0.5rem';
+
+    const startDateGroup = createFormGroup('Start Date', 'date', `rate-start-${index}`, '', true, "1");
+    const endDateGroup = createFormGroup('End Date', 'date', `rate-end-${index}`, '', true, "1");
+
+    row1.appendChild(startDateGroup);
+    row1.appendChild(endDateGroup);
+
+    const row2 = document.createElement('div');
+    row2.style.display = 'flex';
+    row2.style.gap = '0.5rem';
+    row2.style.alignItems = 'flex-end';
+
+    const newRateGroup = createFormGroup('New Rate (%)', 'number', `rate-value-${index}`, 'e.g. 9.0', true, "1");
     newRateGroup.querySelector('input').step = '0.1';
 
     const delBtn = document.createElement('button');
     delBtn.className = 'btn btn-small btn-danger';
     delBtn.innerHTML = '<i class="fas fa-trash"></i>';
+    delBtn.style.height = '36px';
     delBtn.onclick = () => { list.removeChild(item); };
 
-    item.appendChild(dateGroup);
-    item.appendChild(newRateGroup);
-    item.appendChild(delBtn);
+    row2.appendChild(newRateGroup);
+    row2.appendChild(delBtn);
+
+    item.appendChild(row1);
+    item.appendChild(row2);
 
     list.appendChild(item);
+}
+
+function gatherRateChangesData() {
+    const list = document.getElementById('rate-changes-list');
+    const data = [];
+
+    Array.from(list.children).forEach(item => {
+        const startInput = item.querySelector('input[id^="rate-start"]');
+        const endInput = item.querySelector('input[id^="rate-end"]');
+        const valInput = item.querySelector('input[id^="rate-value"]');
+
+        if (startInput && endInput && valInput && startInput.value && endInput.value && valInput.value) {
+            data.push({
+                startDate: startInput.value,
+                endDate: endInput.value,
+                newRate: parseFloat(valInput.value)
+            });
+        }
+    });
+
+    return data;
 }
 
 function gatherDynamicData(listId, datePrefix, valPrefix, valKey) {
@@ -247,6 +303,7 @@ async function calculateEMI() {
     const rate = document.getElementById('interest-rate').value;
     const tenure = document.getElementById('tenure').value;
     const startDateStr = document.getElementById('start-date').value;
+    const monthlyPrepayStr = document.getElementById('monthly-prepayment').value || '0';
 
     if (!principalStr || !rate || !tenure || !startDateStr) {
         alert("Please fill in Principal, Start Date, Interest Rate, and Tenure.");
@@ -261,7 +318,10 @@ async function calculateEMI() {
         annualInterestRate: parseFloat(rate),
         tenureInMonths: parseInt(tenure),
         prepayments: gatherDynamicData('prepayments-list', 'prepay-date', 'prepay-amount', 'amount'),
-        rateChanges: gatherDynamicData('rate-changes-list', 'rate-date', 'rate-value', 'newRate')
+        rateChanges: gatherRateChangesData(),
+        monthlyPrepayment: parseFloat(monthlyPrepayStr.replace(/,/g, '')),
+        monthlyPrepayStartDate: document.getElementById('monthly-prepay-start').value,
+        monthlyPrepayEndDate: document.getElementById('monthly-prepay-end').value
     };
 
     const resultsPanel = document.getElementById('results-panel');
@@ -357,14 +417,12 @@ function renderResults(data, principalNum) {
     data.schedule.forEach(row => {
         const tr = document.createElement('tr');
 
-        if (row.prepayment > 0) tr.style.background = 'rgba(16, 185, 129, 0.1)'; // Highlight prepayment rows
-
         tr.innerHTML = `
             <td>${row.date}</td>
             <td>${formatCurrency(row.emi)}</td>
             <td>${formatCurrency(row.principal)}</td>
             <td>${formatCurrency(row.interest)}</td>
-            <td style="color: ${row.prepayment > 0 ? 'var(--success)' : 'inherit'}">${formatCurrency(row.prepayment)}</td>
+            <td style="color: ${row.prepayment > 0 ? 'var(--green)' : 'inherit'}; font-weight: ${row.prepayment > 0 ? '600' : 'normal'}">${row.prepayment > 0 ? '+ ' : ''}${formatCurrency(row.prepayment)}</td>
             <td>${row.interestRate}%</td>
             <td>${formatCurrency(row.remainingBalance)}</td>
         `;

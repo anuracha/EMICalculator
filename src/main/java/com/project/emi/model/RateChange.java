@@ -1,15 +1,24 @@
 package com.project.emi.model;
 
 public class RateChange {
-    private String date;
+    private String startDate;
+    private String endDate;
     private double newRate;
 
-    public String getDate() {
-        return date;
+    public String getStartDate() {
+        return startDate;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 
     public double getNewRate() {

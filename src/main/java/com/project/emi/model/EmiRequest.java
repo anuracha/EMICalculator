@@ -9,6 +9,33 @@ public class EmiRequest {
     private int tenureInMonths;
     private List<Prepayment> prepayments;
     private List<RateChange> rateChanges;
+    private double monthlyPrepayment;
+    private String monthlyPrepayStartDate;
+    private String monthlyPrepayEndDate;
+
+    public double getMonthlyPrepayment() {
+        return monthlyPrepayment;
+    }
+
+    public void setMonthlyPrepayment(double monthlyPrepayment) {
+        this.monthlyPrepayment = monthlyPrepayment;
+    }
+
+    public String getMonthlyPrepayStartDate() {
+        return monthlyPrepayStartDate;
+    }
+
+    public void setMonthlyPrepayStartDate(String monthlyPrepayStartDate) {
+        this.monthlyPrepayStartDate = monthlyPrepayStartDate;
+    }
+
+    public String getMonthlyPrepayEndDate() {
+        return monthlyPrepayEndDate;
+    }
+
+    public void setMonthlyPrepayEndDate(String monthlyPrepayEndDate) {
+        this.monthlyPrepayEndDate = monthlyPrepayEndDate;
+    }
 
     public String getStartDate() {
         return startDate;

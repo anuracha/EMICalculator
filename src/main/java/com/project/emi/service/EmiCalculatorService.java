@@ -31,29 +31,32 @@ public class EmiCalculatorService {
         List<ScheduleRow> schedule = new ArrayList<>();
 
         DateTimeFormatter outFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        double baseRate = rate;
 
         int m = 1;
         while (balance > 0.001) {
             LocalDate currentEmiDate = startDate.plusMonths(m);
             LocalDate previousEmiDate = startDate.plusMonths(m - 1);
 
-            // 1. Check Rate changes
+            // 1. Check Rate changes - find the rate for the current period
+            double effectiveRate = baseRate;
             if (request.getRateChanges() != null) {
                 for (RateChange rc : request.getRateChanges()) {
-                    LocalDate rcDate = LocalDate.parse(rc.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
-                    boolean isMatched = false;
-                    if (m == 1) {
-                        isMatched = !rcDate.isBefore(previousEmiDate) && !rcDate.isAfter(currentEmiDate);
-                    } else {
-                        isMatched = rcDate.isAfter(previousEmiDate) && !rcDate.isAfter(currentEmiDate);
-                    }
-                    if (isMatched) {
-                        rate = rc.getNewRate();
+                    LocalDate rcStart = LocalDate.parse(rc.getStartDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+                    LocalDate rcEnd = LocalDate.parse(rc.getEndDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+
+                    // Check if current payment date falls into the window
+                    // (Calculation is performed based on the rate active at the end of the period)
+                    if (!currentEmiDate.isBefore(rcStart) && !currentEmiDate.isAfter(rcEnd)) {
+                        effectiveRate = rc.getNewRate();
                     }
                 }
             }
 
-            double monthlyRate = rate / 12 / 100;
+            // If rate changed from previous month, optionally recalculate EMI or just let
+            // it affect principal
+            // For now, we apply the effectiveRate to the interest component calculation
+            double monthlyRate = effectiveRate / 12 / 100;
             double interestComponent = balance * monthlyRate;
             double principalComponent = currentEmi - interestComponent;
 
@@ -69,6 +72,24 @@ public class EmiCalculatorService {
 
             // 2. Add prepayments that occurred in this cycle
             double prepaymentAmount = 0;
+            if (request.getMonthlyPrepayment() > 0) {
+                boolean applyMonthly = true;
+                if (request.getMonthlyPrepayStartDate() != null && !request.getMonthlyPrepayStartDate().isEmpty()) {
+                    LocalDate mpStart = LocalDate.parse(request.getMonthlyPrepayStartDate(),
+                            DateTimeFormatter.ISO_LOCAL_DATE);
+                    if (currentEmiDate.isBefore(mpStart))
+                        applyMonthly = false;
+                }
+                if (request.getMonthlyPrepayEndDate() != null && !request.getMonthlyPrepayEndDate().isEmpty()) {
+                    LocalDate mpEnd = LocalDate.parse(request.getMonthlyPrepayEndDate(),
+                            DateTimeFormatter.ISO_LOCAL_DATE);
+                    if (currentEmiDate.isAfter(mpEnd))
+                        applyMonthly = false;
+                }
+                if (applyMonthly) {
+                    prepaymentAmount += request.getMonthlyPrepayment();
+                }
+            }
             if (request.getPrepayments() != null) {
                 for (Prepayment p : request.getPrepayments()) {
                     LocalDate pDate = LocalDate.parse(p.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
@@ -100,7 +121,7 @@ public class EmiCalculatorService {
             row.setPrincipal(Math.round(principalComponent * 100.0) / 100.0);
             row.setPrepayment(Math.round(prepaymentAmount * 100.0) / 100.0);
             row.setRemainingBalance(Math.round(balance * 100.0) / 100.0);
-            row.setInterestRate(rate);
+            row.setInterestRate(effectiveRate);
 
             schedule.add(row);
             m++;

@@ -38,35 +38,35 @@ body {
 .container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 2.5rem 1.5rem;
+    padding: 1.5rem 1rem;
 }
 
 /* ── Header ────────────────────────────── */
 header {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
 }
 
 header h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--primary);
     letter-spacing: -1px;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.2rem;
     text-shadow: 0 0 40px var(--primary-glow);
 }
 
 header p {
     color: var(--text-dim);
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
 /* ── Layout ────────────────────────────── */
 .layout {
     display: grid;
-    grid-template-columns: 1.8fr 1fr;
-    gap: 1.5rem;
-    align-items: start;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 1rem;
+    align-items: stretch;
 }
 
 @media (max-width: 1024px) {
@@ -79,8 +79,8 @@ header p {
 .glass-panel {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 2rem;
+    border-radius: 12px;
+    padding: 1.25rem;
     transition: box-shadow 0.3s ease;
 }
 
@@ -90,32 +90,32 @@ header p {
 
 /* ── Section Titles ────────────────────── */
 .section-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.75rem;
     display: flex;
     align-items: center;
     gap: 0.6rem;
     color: var(--text);
-    padding-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
     border-bottom: 1px solid rgba(75, 85, 99, 0.5);
 }
 
 .section-title i {
     color: var(--primary);
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: rgba(6, 182, 212, 0.1);
-    border-radius: 8px;
-    font-size: 0.9rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
 }
 
 /* ── Form Controls ─────────────────────── */
 .form-group {
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.75rem;
 }
 
 .form-group label {
@@ -132,10 +132,10 @@ header p {
     width: 100%;
     background: var(--bg-input);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    padding: 0.45rem 0.6rem;
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-family: 'DM Sans', sans-serif;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -302,14 +302,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .results-summary {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .summary-card {
     background: rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(75, 85, 99, 0.4);
-    padding: 1.25rem;
+    padding: 0.75rem;
     border-radius: var(--radius);
     text-align: center;
     transition: border-color 0.2s;
@@ -320,17 +320,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .summary-card h3 {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: var(--text-dim);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
     font-family: sans-serif;
 }
 
 .summary-card .value {
-    font-size: 1.35rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--text);
     font-family: sans-serif;
@@ -343,7 +343,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .summary-card.highlight .value {
-    font-size: 2rem;
+    font-size: 1.6rem;
     color: var(--primary);
 }
 
@@ -364,7 +364,7 @@ table {
 
 th,
 td {
-    padding: 0.85rem 1rem;
+    padding: 0.5rem 0.75rem;
     text-align: right;
     font-variant-numeric: tabular-nums;
     font-size: 0.85rem;
